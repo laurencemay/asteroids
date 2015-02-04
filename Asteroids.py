@@ -12,6 +12,17 @@ def init(screen,ship):
     pygame.display.flip()
     return ship_rect
 
+pygame.init()
+size = width, height = 700, 700
+screen = pygame.display.set_mode(size)
+ship = pygame.image.load("space.png")
+
+
+asteroids = []
+for n in range(1, 3):
+    asteroids.append(pygame.image.load("asteroid.png"))
+    pygame.display.flip()
+    
 
 def gameLoop(shipImage,start_position,screen,ship_angle):
     for event in pygame.event.get():
@@ -26,10 +37,6 @@ def gameLoop(shipImage,start_position,screen,ship_angle):
     pygame.display.flip()
     return ship_angle
 
-pygame.init()
-size = width, height = 700, 700
-screen = pygame.display.set_mode(size)
-ship = pygame.image.load("space.png")
     
 start_pos = init(screen,ship)
 angle = 0
