@@ -91,6 +91,7 @@ def gameLoop(game):
         asteroid["pos"]["y"] += 5 * math.cos(asteroid["angle"] * 0.017453)
         asteroidRect = asteroid["rect"]
         if asteroidRect.colliderect(shipRect):
+            print("You Died D:")
             pygame.quit()
             sys.exit()
         if (asteroid["pos"]["x"] == shipPos["x"]) and (shipPos["y"] == asteroid["pos"]["y"]):
