@@ -7,7 +7,9 @@ def start_state():
             "position": {"x": 350, "y": 350},
             "angle": 0,
             "image": pygame.image.load("space.png"),
-            "rect": pygame.image.load("space.png").get_rect()
+            "rect": pygame.image.load("space.png").get_rect(),
+            "health":5,
+            "hits":0
         },
         "screen": pygame.display.set_mode(size),
         "background": pygame.image.load("AndromedaGalaxy.png"),
@@ -69,15 +71,22 @@ def gameLoop(game):
         ship["angle"] -= 2
 
     elif key[pygame.K_SPACE]:
-        game["bullet"]["fired"] = True
-        game["bullet"]["angle"] = game["ship"]["angle"]
+        bullet = game["bullet"]
+        bullet["fired"] = True
+        bullet["angle"] = game["ship"]["angle"]
+        bullet["pos"]["x"] = 350
+        bullet["pos"]["y"] = 350
+
     bulletAngle = game["bullet"]["angle"]
     bulletAngle = bulletAngle + 180
     bullet = game["bullet"]
     if bullet["fired"] == True:
         bullet["pos"]["x"] += 5 * math.sin(bulletAngle * 0.017453)
         bullet["pos"]["y"] += 5 * math.cos(bulletAngle * 0.017453)
-
+        if bullet["pos"]["x"] > 700 or bullet["pos"]["x"] < 0:
+            bullet["fired"] == False
+        if bullet["pos"]["y"] > 700 or bullet["pos"]["y"] < 0:
+            bullet["fired"] == False
     #draw all the sprites now, so we can use their rects to
     #check for collisions
     draw(game)
@@ -94,13 +103,15 @@ def gameLoop(game):
         asteroidRect = asteroid["rect"]
         if bullet["rect"].colliderect(asteroidRect) and bullet["fired"] == True:
             game["asteroids"].remove(asteroid)
+            ship["hits"] += 1
         if asteroidRect.colliderect(shipRect):
-            print("You Died D:")
-            pygame.quit()
-            sys.exit()
-        if (asteroid["pos"]["x"] == shipPos["x"]) and (shipPos["y"] == asteroid["pos"]["y"]):
-            pygame.quit()
-            sys.exit()
+            if asteroid in game["asteroids"]:
+                game["asteroids"].remove(asteroid)
+            ship["health"] -= 1
+            if ship["health"] == 0:
+                print("You Died D: you hit " + str(ship["hits"]) + " asteroids")
+                pygame.quit()
+                sys.exit()
 
 
 def draw(game):
