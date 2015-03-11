@@ -18,13 +18,14 @@ def start_state():
              "rect": pygame.image.load("asteroid.png").get_rect()
             },
         ],
-        "bullet": {
+        "bullet":{
+            "rect":pygame.image.load("bullet.png").get_rect(),
             "image": pygame.image.load("bullet.png"),
             "pos": {"x": 350, "y": 350},
             "angle": 0,
             "fired": False
+            },
 
-        }
     }
     return game
 
@@ -83,6 +84,7 @@ def gameLoop(game):
     shipRect = game["ship"]["image"].get_rect()
     shipRect.right += 350
     shipRect.bottom += 350
+
     #now check for any collisions
     #shiprect = ship["image"].get_rect()
     for i in range(len(game["asteroids"])-1, -1, -1):
@@ -90,6 +92,8 @@ def gameLoop(game):
         asteroid["pos"]["x"] += 5 * math.sin(asteroid["angle"] * 0.017453)
         asteroid["pos"]["y"] += 5 * math.cos(asteroid["angle"] * 0.017453)
         asteroidRect = asteroid["rect"]
+        if bullet["rect"].colliderect(asteroidRect) and bullet["fired"] == True:
+            game["asteroids"].remove(asteroid)
         if asteroidRect.colliderect(shipRect):
             print("You Died D:")
             pygame.quit()
@@ -103,6 +107,15 @@ def draw(game):
     screen = game["screen"]
     background = game["background"]
     backgroundRect = background.get_rect()
+
+
+ #   draw_centre_x = ship["position"]["x"] - surface_centre[0]
+ #   draw_centre_y = ship["position"]["y"] - surface_centre[1]
+ #   draw_centre = draw_centre_x, draw_centre_y
+
+#    screen.blit(rotated_surface, draw_centre)
+
+
     # Rotate the ship image and then draw it
     ship = game["ship"]
     shipAngle = ship['angle']
@@ -112,9 +125,7 @@ def draw(game):
     draw_centre_x = ship["position"]["x"] - surface_centre[0]
     draw_centre_y = ship["position"]["y"] - surface_centre[1]
     shipRect= shipImage.get_rect()
-    shipRect.move(draw_centre_x - shipRect.right, draw_centre_y - shipRect.top)
-    shipRect.right += 350
-    shipRect.bottom += 350
+    shipRect = shipRect.move(draw_centre_x - shipRect.right, draw_centre_y - shipRect.top)
     screen.blit(background, backgroundRect)
     screen.blit(rotated_surface, shipRect)
     for asteroid in game["asteroids"]:
@@ -129,12 +140,12 @@ def draw(game):
     # Draw the bullet, if it has been fired
     if game["bullet"]["fired"] == True:
         bullet_rect = game["bullet"]["image"].get_rect()
-        bullet_rect.bottom = game["bullet"]["pos"]["y"]
-        bullet_rect.right += game["bullet"]["pos"]["x"]
-        screen.blit(game["bullet"]["image"], bullet_rect)
+        bullet = game["bullet"]
+        bulletX = bullet["pos"]["x"]
+        bulletY = bullet["pos"]["y"]
+        bullet["rect"] = bullet_rect.move(bulletX - bullet_rect.right, bulletY - bullet_rect.top)
+        screen.blit(game["bullet"]["image"], bullet["rect"])
     pygame.display.flip()
-
-
 game = start_state()
 pygame.init()
 init(game)
